@@ -1,73 +1,46 @@
-import { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
-import ListGroup from "react-bootstrap/ListGroup";
-
-import logo from "./logo.svg";
+import React, {useState, useEffect} from "react";
+import Header from "./component/Header";
+import Form from "./component/Form";
+import TodoList from "./component/TodoList";
 import "./App.css";
 
-function App() {
-  const [list, setList] = useState({
-    random: Math.random(),
-    data: [
-      { title: "Baca buku" },
-      { title: "Olahraga" },
-      { title: "Istirahat" },
-    ],
-  });
-  const [newTodo, setNewTodo] = useState("");
+const App = () =>{
+  const initialState = JSON.parse(localStorage.getItem("todos")) || [];
+  const[input, setInput]=useState("");
+  const[todos, setTodos]=useState(initialState);
+  const[editTodo, setEditTodo]=useState(null);
 
-  const actionAddTodo = () => {
-    const newData = list.data;
-    newData.push({ title: newTodo });
-    setList({ random: Math.random(), data: newData });
-    setNewTodo("");
-  };
-
-  const actionDeleteTodo = (index) => {
-    const newData = list.data;
-    newData.splice(index, 1);
-    setList({ random: Math.random(), data: newData });
-    setNewTodo("");
-  };
-
-  return (
-    <div className="App">
-      <div style={{ maxWidth: 300, margin: "auto" }}>
-        <h1>Todo List App</h1>
-        <br />
-        <InputGroup className="mb-3">
-          <Form.Control
-            placeholder="Ketik todo disini..."
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
-          />
-          <Button variant="primary" onClick={actionAddTodo}>
-            Tambahkan
-          </Button>
-        </InputGroup>
-        <ListGroup as="ol" numbered>
-          {list.data.map((item, index) => (
-            <ListGroup.Item
-              key={index}
-              as="li"
-              style={{ display: "flex", justifyContent: "space-between" }}
-            >
-              {item.title}
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => actionDeleteTodo(index)}
-              >
-                Hapus
-              </Button>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
+  useEffect(()=>{
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+  return(
+    <div className="container">
+      <div className="app-wrapper">
+        <div>
+          <Header/>
+        </div>
+        <div>
+          <Form
+              input={input}
+              setInput={setInput}
+              todos={todos}
+              setTodos={setTodos}
+              editTodo={editTodo}
+              setEditTodo={setEditTodo}
+            />
+        </div>
+        <div>
+          <TodoList 
+          todos={todos} 
+          setTodos={setTodos}
+          setEditTodo={setEditTodo} />
+        </div>
+        
       </div>
+
     </div>
-  );
+
+  )
 }
 
 export default App;
